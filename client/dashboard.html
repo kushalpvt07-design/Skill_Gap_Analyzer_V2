@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGap | Premium Resume Analyzer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        /* Injecting the Loading Spinner CSS directly here so you don't lose it again */
+        .loading-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(139, 92, 246, 0.2);
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blur shape-1"></div>
+    <div class="bg-blur shape-2"></div>
+    <div class="bg-blur shape-3"></div>
+
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#paint0_linear)" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <defs>
+                        <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#fff" />
+                            <stop offset="1" stop-color="#e0e7ff" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <span class="logo-text">SkillGap</span>
+        </div>
+        <nav class="nav-links">
+            <a href="/extra/how_it_works.html">How it works</a>
+            <a href="/extra/features.html">Features</a>
+            <span id="userBadge" class="user-badge" style="display:none;"></span>
+            <button class="signin-btn" id="logoutBtn" style="display:none;">Logout</button>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div class="sidebar-wrapper glass-panel">
+
+            <div class="upload-card">
+                <input type="file" id="resumeUpload" accept=".pdf,.txt,.docx" style="display:none;">
+                <label for="resumeUpload" class="upload-area">
+                    <div class="upload-icon-wrapper pulse-animation">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <polyline points="9 15 12 12 15 15"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Upload Resume</h3>
+                    <p>PDF or TXT &bull; Resume Parsing</p>
+                </label>
+                <div id="uploadStatus" class="upload-status" style="display:none;"></div>
+            </div>
+
+            <aside class="sidebar-content">
+                <div class="sidebar-header">
+                    <h2>PROFILE CONTEXT</h2>
+                    <button class="clear-all" id="clearFormBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="dashboardMsg" class="msg" style="display:none; margin-bottom: 15px;"></div>
+                <form id="profileForm">
+                    <div class="input-group">
+                        <label>Target Role</label>
+                        <input type="text" id="goal" placeholder="e.g. Senior Data Scientist">
+                        <div id="suggestedRolesContainer" style="display:none; margin-top: 8px; flex-wrap: wrap; gap: 6px;"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Current Skills</label>
+                        <input type="text" id="skills" placeholder="e.g. Python, Java, SQL">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Experience Details</label>
+                        <textarea id="experience" placeholder="Paste additional context or achievements..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Certificates</label>
+                        <input type="text" id="scores" placeholder="e.g. AWS Certified, Top 10 Kaggle">
+                    </div>
+
+
+
+                    <button type="button" class="generate-btn" id="generateAnalysisBtn">
+                        <span class="btn-text">Generate Roadmap</span>
+                        <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+            </aside>
+        </div>
+
+        <section class="content-area glass-panel" id="contentPanel">
+            <div class="content-tabs">
+                <button class="tab-btn tab-active" id="tabAnalysis">Analysis</button>
+                <button class="tab-btn" id="tabMockTest">Mock Test</button>
+                <button class="tab-btn" id="tabHistory">History</button>
+            </div>
+
+
+            <div id="analysisTab" class="tab-panel tab-panel-active">
+                
+                <div id="loadingOverlay" class="loading-overlay">
+                    <div class="spinner"></div>
+                    <h3 style="color: #f3f4f6; margin-bottom: 8px;">Analyzing Profile...</h3>
+                    <p style="color: #9ca3af; font-size: 0.9rem;">Connecting to AI models. This may take a moment if servers are busy.</p>
+                </div>
+
+                <div id="resultArea">
+                    <div class="empty-state">
+                        <div class="target-icon float-animation">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M22 12h-4"></path>
+                                <path d="M6 12H2"></path>
+                                <path d="M12 2v4"></path>
+                                <path d="M12 22v-4"></path>
+                            </svg>
+                        </div>
+                        <h2>Awaiting Analysis</h2>
+                        <p>Upload a resume or fill in your details to discover your personalized skills gap roadmap
+                            against industry demand.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historyTab" class="tab-panel">
+                <div class="history-header">
+                    <h2>Your History</h2>
+                    <button class="small-btn" id="refreshHistoryBtn">Refresh</button>
+                </div>
+                <div id="historyList" class="history-list"></div>
+            </div>
+
+            <div id="mockTestTab" class="tab-panel">
+                <div class="history-header">
+                    <h2>Mock Test</h2>
+                    <button class="generate-btn" style="padding: 8px 16px; margin: 0; width: auto;" id="generateTestBtn">Generate Test</button>
+                </div>
+                <div id="mockTestLoading" class="loading-overlay" style="display:none; min-height: 200px;">
+                    <div class="spinner"></div>
+                    <h3 style="color: #f3f4f6;">Generating Questions...</h3>
+                </div>
+                <div id="mockTestResult" style="margin-top: 20px;">
+                    <div class="empty-state">
+                        <div class="target-icon float-animation">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <h2>Ready to Practice?</h2>
+                        <p>Enter your Target Role on the left and click 'Generate Test' to get custom interview questions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGap - Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- FIXED: Using the new premium background classes -->
+    <div class="bg-blur shape-1"></div>
+    <div class="bg-blur shape-2"></div>
+    <div class="bg-blur shape-3"></div>
+
+    <main class="login-container">
+        <div class="login-panel">
+            <h1 class="login-logo-text">SkillGap</h1>
+            <p class="subtitle">Sign in to keep your roadmap history.</p>
+
+            <div class="tab-switcher">
+                <button type="button" class="tab active" id="tab-login">Login</button>
+                <button type="button" class="tab" id="tab-register">Create account</button>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group-login">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+                
+                <div class="form-group-login">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}" title="Password must be at least 8 characters long, include one capital letter, one number, and one special character." required>
+                </div>
+                
+                <button type="submit" class="btn-gradient glow" id="auth-submit">Login</button>
+                <button type="button" class="btn-outline" id="guest-btn">Try without account</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="login.js"></script>
+</body>
+</html>
